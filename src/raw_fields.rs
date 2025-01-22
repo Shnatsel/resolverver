@@ -66,6 +66,27 @@ resolver = \"2\"
 }
 
 #[test]
+fn regular_package() {
+    let toml = "
+[package]
+name = \"sample-package\"
+version = \"0.1.0\"
+edition = \"2021\"
+";
+
+    let expected = RawTomlFields {
+        package: Some(Package {
+            resolver: None,
+            edition: Some(Edition::Edition("2021".to_owned())),
+        }),
+        workspace: None,
+    };
+
+    let parsed: RawTomlFields = toml::from_str(&toml).unwrap();
+    assert_eq!(parsed, expected);
+}
+
+#[test]
 fn barebones_package() {
     let toml = "
 [package]
