@@ -30,7 +30,7 @@ pub(crate) struct RawTomlFields {
 impl RawTomlFields {
     pub fn resolve(self) -> TomlFields {
         let resolver: Option<String> = {
-            // TODO: which one takes precedence? package or workspace?
+            // Cargo rejects files that specify both package.resolver and workspace.resolver
             if let Some(version) = self.workspace.clone().and_then(|w| w.resolver) {
                 Some(version)
             } else {
@@ -79,7 +79,6 @@ resolver = \"1\"
 
 [workspace]
 package.edition = \"2021\"
-resolver = \"2\"
 ";
 
         let expected = RawTomlFields {
@@ -99,6 +98,38 @@ resolver = \"2\"
         let parsed: RawTomlFields = toml::from_str(&toml).unwrap();
         assert_eq!(parsed, expected);
     }
+}
+
+#[test]
+fn all_the_other_fields() {
+    let toml = "
+[package]
+name = \"sample-package\"
+version = \"0.1.0\"
+edition = \"2015\"
+
+[dependencies]
+
+[workspace]
+resolver = \"2\"
+";
+
+    let expected = RawTomlFields {
+        package: Some(Package {
+            resolver: Some("1".to_owned()),
+            edition: Some(Edition::InheritWorkspace { workspace: true }),
+        }),
+        workspace: Some(Workspace {
+            package: Some(Package {
+                resolver: None,
+                edition: Some(Edition::Edition("2021".to_owned())),
+            }),
+            resolver: Some("2".to_owned()),
+        }),
+    };
+
+    let parsed: RawTomlFields = toml::from_str(&toml).unwrap();
+    assert_eq!(parsed, expected);
 }
 
 #[test]
