@@ -1,7 +1,9 @@
-# resolverver: Get the Cargo resolver version for a workspace
+# resolverver: Get the Cargo resolver version
 
 Knowing the [Cargo resolver version](https://doc.rust-lang.org/cargo/reference/resolver.html#resolver-versions)
-in use is important to some tooling that interfaces with Cargo. You'll know it when you need it.
+used in a given workspace is important to some tooling that interfaces with Cargo.
+
+You'll know it when you need it.
 
 ### Usage
 
