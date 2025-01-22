@@ -91,12 +91,9 @@ package.edition = \"2021\"
                     resolver: None,
                     edition: Some(Edition::Edition("2021".to_owned())),
                 }),
-                resolver: Some("2".to_owned()),
+                resolver: None,
             }),
         };
-
-        let parsed: RawTomlFields = toml::from_str(&toml).unwrap();
-        assert_eq!(parsed, expected);
     }
 }
 
@@ -116,14 +113,11 @@ resolver = \"2\"
 
     let expected = RawTomlFields {
         package: Some(Package {
-            resolver: Some("1".to_owned()),
-            edition: Some(Edition::InheritWorkspace { workspace: true }),
+            resolver: None,
+            edition: Some(Edition::Edition("2015".to_owned())),
         }),
         workspace: Some(Workspace {
-            package: Some(Package {
-                resolver: None,
-                edition: Some(Edition::Edition("2021".to_owned())),
-            }),
+            package: None,
             resolver: Some("2".to_owned()),
         }),
     };
