@@ -19,6 +19,7 @@ use resolverver;
 // Locate and load the Cargo.toml for the workspace
 let metadata = cargo_metadata::MetadataCommand::new().no_deps().exec().unwrap();
 let toml = std::fs::read_to_string(metadata.workspace_root.join("Cargo.toml")).unwrap();
+
 // Deduce the resolver version in use
 let resolver_version = resolverver::from_toml(&toml).unwrap();
 println!("Resolver version in this workspace is: {resolver_version:?}");
