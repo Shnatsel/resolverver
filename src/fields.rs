@@ -1,5 +1,6 @@
 use crate::Resolver;
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct TomlFields {
     pub resolver: Option<String>,
     pub edition: Option<String>,
