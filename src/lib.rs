@@ -1,3 +1,17 @@
+//!
+//!
+//! ### Usage
+//!
+//! ```
+//! use cargo_metadata;
+//! use resolverver;
+//!
+//! let metadata = cargo_metadata::MetadataCommand::new().no_deps().exec().unwrap();
+//! let toml = std::fs::read_to_string(metadata.workspace_root.join("Cargo.toml")).unwrap();
+//! let resolver_version = resolverver::from_toml(&toml).unwrap();
+//! println!("Resolver version in this workspace is: {resolver_version:?}");
+//! ```
+
 mod error;
 mod fields;
 mod raw_fields;
