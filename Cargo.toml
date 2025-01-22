@@ -1,0 +1,10 @@
+[package]
+name = "resolverver"
+version = "0.1.0"
+edition = "2021"
+description = "Determines the Cargo resolver version for a workspace"
+
+[dependencies]
+serde = { version = "1.0.217", features = ["derive"] }
+toml = { version = "0.8.19", default-features = false, features = ["parse"] }
+
