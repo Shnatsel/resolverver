@@ -1,3 +1,4 @@
+use crate::fields::TomlFields;
 use serde::Deserialize;
 
 #[derive(Deserialize, Debug, Clone, Eq, PartialEq)]
@@ -21,9 +22,44 @@ struct Workspace {
 
 /// Raw deserialized TOML fields, before resolving workspace inheritance
 #[derive(Deserialize, Debug, Clone, Eq, PartialEq)]
-struct RawTomlFields {
+pub(crate) struct RawTomlFields {
     package: Option<Package>,
     workspace: Option<Workspace>,
+}
+
+impl RawTomlFields {
+    pub fn resolve(self) -> TomlFields {
+        let resolver: Option<String> = {
+            // TODO: which one takes precedence? package or workspace?
+            if let Some(version) = self.workspace.clone().and_then(|w| w.resolver) {
+                Some(version)
+            } else {
+                self.package.clone().and_then(|pkg| pkg.resolver)
+            }
+        };
+
+        let edition: Option<String> = self.package.and_then(|pkg| {
+            pkg.edition.and_then(|ed| {
+                match ed {
+                    Edition::Edition(value) => Some(value),
+                    Edition::InheritWorkspace { workspace } => match workspace {
+                        true => self
+                            .workspace
+                            .and_then(|w| w.package)
+                            .and_then(|pkg| pkg.edition)
+                            .and_then(|ed| match ed {
+                                Edition::Edition(value) => Some(value),
+                                // `edition.workspace = true` cannot appear in workspace definition (under [workspace])
+                                Edition::InheritWorkspace { .. } => None,
+                            }),
+                        false => None,
+                    },
+                }
+            })
+        });
+
+        TomlFields { resolver, edition }
+    }
 }
 
 #[cfg(test)]
