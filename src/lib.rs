@@ -1,3 +1,4 @@
+mod error;
 mod fields;
 mod raw_fields;
 mod resolver;

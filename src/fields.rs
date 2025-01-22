@@ -1,4 +1,4 @@
-use crate::Resolver;
+use crate::{error::UnrecognizedValue, Resolver};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct TomlFields {
@@ -7,23 +7,23 @@ pub(crate) struct TomlFields {
 }
 
 impl TomlFields {
-    pub fn resolver(&self) -> Resolver {
-        if let Some(ver) = &self.resolver {
+    pub fn resolver(self) -> Result<Resolver, UnrecognizedValue> {
+        if let Some(ver) = self.resolver {
             match ver.as_str() {
-                "1" => Resolver::V1,
-                "2" => Resolver::V2,
-                "3" => Resolver::V3,
-                _ => todo!(),
+                "1" => Ok(Resolver::V1),
+                "2" => Ok(Resolver::V2),
+                "3" => Ok(Resolver::V3),
+                _ => Err(UnrecognizedValue::UnknownResolver(ver)),
             }
-        } else if let Some(ed) = &self.edition {
+        } else if let Some(ed) = self.edition {
             match ed.as_str() {
-                "2015" => Resolver::V1,
-                "2018" | "2021" => Resolver::V2,
-                "2024" => Resolver::V3,
-                _ => todo!(),
+                "2015" => Ok(Resolver::V1),
+                "2018" | "2021" => Ok(Resolver::V2),
+                "2024" => Ok(Resolver::V3),
+                _ => Err(UnrecognizedValue::UnknownEdition(ed)),
             }
         } else {
-            Resolver::V1
+            Ok(Resolver::V1)
         }
     }
 }
